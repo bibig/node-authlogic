@@ -1,0 +1,39 @@
+{
+  "name"        : "node-jsoncan-auths",
+  "author"      : "Bibig <bibig@me.com> (https://twitter.com/bibig)",
+  "version"     : "0.0.0",
+  "description" : "auth module for app backed by jsoncan",
+  "main"        : "index.js",
+  "scripts"     : {
+    "test": "mocha -w"
+  },
+  "dependencies": {
+    "express"            : "~4.0.0",
+    "stylus"             : "*",
+    "serve-favicon"      : "*",
+    "morgan"             : "~1.0.0",
+    "cookie-parser"      : "~1.0.1",
+    "body-parser"        : "~1.0.0",
+    "cookie-session"     : "*",
+    "connect-multiparty" : "*",
+    "csurf"              : "*",
+    "swig"               : "*",
+    "jsoncan"            : "1.1.9",
+    "jsoncan-dashboard"  : "jsoncan-dashboard",
+    "yi"                 : "0.0.2",
+    "htmler"             : "0.0.5",
+    "bootstrap-helper"   : "*"
+  },
+  "devDependencies": {
+    "supertest"  : "*",
+    "superagent" : "*",
+    "cheerio"    : "*",
+    "mocha"      : "*",
+    "should"     : "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bibig/node-jsoncan-auths.git"
+  },
+  "license": "MIT"
+}

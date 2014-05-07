@@ -1,0 +1,2 @@
+
+var Can = require('can');

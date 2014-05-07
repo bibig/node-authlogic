@@ -1,0 +1,37 @@
+{%  extends 'layout.html'%}
+{% set pageTitle = '登录' %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-md-5">
+        <div style="margin: 2em 0"><img src="/images/login.png" width="400"></div>
+      </div>
+      <div class="col-md-7">
+        <div id="loginForm" style="border-left: 1px solid #ccc; margin-left: 2em; padding-left: 2em">
+          <h2>{{pageTitle}}</h2>
+          {% if errorMessage %}
+            <div class="alert alert-danger">{{errorMessage}}</div>
+          {% endif %}
+          <form method="post" action="{{mount}}/login">
+            <div class="form-group">
+              <label for="inputUsername">用户名</label>
+              <input type="text" class="form-control" id="inputUsername" name="auth[name]" placeholder="用户名">
+            </div>
+            <div class="form-group">
+              <label for="inputPassword">密码</label>
+              <input type="password" class="form-control" id="inputPassword" name="auth[password]" placeholder="密码">
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="auth[remember]"> 记住我
+              </label>
+            </div>
+            <input type="hidden" name="_csrf" value="{{token}}">
+            <button type="submit" class="btn btn-default btn-success btn-block">登陆</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
