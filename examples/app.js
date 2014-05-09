@@ -1,8 +1,12 @@
 
+var express = require('express');
 var Auths = require('../index');
 var path  = require('path');
+var mainApp = express();
+var mount = '/auths';
 
 var auths = Auths.create({
+  mount: mount,
   dbPath: path.join(__dirname, 'data'),
   logo: '/|xxxx网站|.:navbar-brand|i:eye-open',
   mainToolbars: [
@@ -14,5 +18,7 @@ var auths = Auths.create({
 });
 
 auths.initRoot();
+// auths.app.listen(4001);
 
-auths.app.listen(4001);
+mainApp.use(mount, auths.app);
+mainApp.listen(4001);

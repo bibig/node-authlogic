@@ -2,15 +2,17 @@ exports.create = create;
 
 var yi = require('yi');
 
-function create (app, settings) {
-  return new Routes(app, settings);
+function create (config) {
+  return new Routes(config);
 }
 
-function Routes (app, settings) {
-  this.app         = app;
-  this.Auth        = settings.can.open('auths');
-  this.Role        = settings.can.open('roles');
-  this.redirectMap = settings.redirectMap || {};
+function Routes (config) {
+  this.Members           = config.can.open('members');
+  this.Role              = config.can.open('roles');
+  this.loginRedirectMap  = config.redirectMap.login;
+  this.logoutRedirectUrl = config.redirectMap.logout;
+  this.errorMessages     = config.errorMessages;
+  this.csrf              = config.csrf;
 }
 
 Routes.prototype.login = function () {
@@ -19,29 +21,37 @@ Routes.prototype.login = function () {
   return function (req, res, next) {
     var locals = {};
     var isPass = false;
-    var authData;
+    var memberData;
+
+    // console.log(req.sessionOptions);
+    // console.log(req.session.isMember);
+    // console.log(req.session.role);
 
     function renderForm () {
-      locals.token = req.csrfToken();
+
+      if (self.csrf) {
+        locals.token = req.csrfToken();
+      }
+        
       res.render('login.html', locals);    
     }
 
     if (req.method === 'POST') {
-      authData = req.body.auth;
-      // console.log(authData);
+      memberData = req.body.member;
+      // console.log(memberData);
 
-      if (yi.isNotEmpty(authData.name) && yi.isNotEmpty(authData.password)) {
+      if (yi.isNotEmpty(memberData.username) && yi.isNotEmpty(memberData.password)) {
 
-        self.Auth.findBy('name', authData.name).exec(function (e, auth) {
+        self.Members.findBy('username', memberData.username).exec(function (e, member) {
           var model;
 
-          // console.log(auth);
-          if (e) { next(e); return; } else if ( auth ) {
+          // console.log(member);
+          if (e) { next(e); return; } else if ( member ) {
 
-            model = self.Auth.model(auth);
-            // console.log(auth);
+            model = self.Members.model(member);
+            // console.log(member);
 
-            if ( model.isValidPassword(authData.password) ) {
+            if ( model.isValidPassword(memberData.password) ) {
               isPass = true;
             }
 
@@ -49,22 +59,26 @@ Routes.prototype.login = function () {
 
           if (isPass) {
 
-            self.Role.find(auth._role).exec(function (e, role) {
+            self.Role.find(member._role).exec(function (e, role) {
               var redirectUrl;
 
               // console.log(role);
               if (e) { next(e); return; } else if ( ! role ) {
-                next(new Error('没有找到用户对应的角色'));
+                next(new Error(self.errorMessages['100']));
               } else {
                 
-                req.session.isLogin = true;
-                req.session.role = role.name;
+                // console.log('ready to set session');
+                req.session.auth = {
+                  isMember : true,
+                  role     : role.name 
+                };
+                // console.log(req.session.role);
 
-                if (authData.remember == 'on') {
-                  req.session.cookie.originMaxAge =  1000 * 3600 * 24 * 30;
+                if (memberData.remember == 'on') {
+                  req.sessionOptions.maxAge =  1000 * 3600 * 24 * 30;
                 }
 
-                redirectUrl = self.redirectMap[role.name] || '/';
+                redirectUrl = self.loginRedirectMap[role.name] || self.loginRedirectMap.member;
                 // console.log(redirectUrl);
                 res.redirect(redirectUrl);
               }
@@ -72,14 +86,14 @@ Routes.prototype.login = function () {
             }); // end of find
 
           } else {
-            locals.errorMessage = '对不起，用户名和密码不符';
+            locals.errorMessage = self.errorMessages['101'];
             renderForm();
           }
 
         });  // end of loadby
 
       } else {
-        locals.errorMessage = '请输入用户名和密码';
+        locals.errorMessage = self.errorMessages['102'];
         renderForm();
       }
 
@@ -90,28 +104,16 @@ Routes.prototype.login = function () {
   };
 };
 
-Routes.prototype.enable = function () {
-  this.app.all('/login', this.login());
+Routes.prototype.logout = function () {
+  var self = this;
+
+  return function (req, res) {
+    req.session.auth = null;
+    res.redirect(self.logoutRedirectUrl);
+  };
 };
 
-/*function guestOnly (req, res, next) {
-  if (req.session.isAdmin === true) {
-    res.redirect('/');
-  } else {
-    next();
-  }
-}
+// open to guest 
+Routes.prototype.register = function () {
 
-// todo: 可以考虑带上url参数，成功登陆后直接转过去
-function adminOnly (req, res, next) {
-  if (req.session.isAdmin === true) {
-    next();
-  } else {
-    res.redirect('/login');
-  }
-}
-
-function logout (req, res) {
-  req.session.isAdmin = null;
-  res.redirect('/');
-}*/
+};

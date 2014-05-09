@@ -25,7 +25,7 @@ var tables = {
     },
     name: {
       type     : 'string', 
-      text     : '标题', 
+      text     : '名称', 
       max      : 100, 
       required : true,
       isUnique : true,
@@ -35,23 +35,36 @@ var tables = {
       type    : 'string',
       text    : '描述',
       isInput : true
+    },
+    membersCount: {
+      type: 'int',
+      default: 0,
+      required: true
     }
   },
-  auths: {
+  members: {
     _role: {
-      type     : 'ref',
-      text     : '角色',
-      required : true,
-      isInput  : true
+      type      : 'ref',
+      text      : '角色',
+      required  : true,
+      isInput   : true,
+      inputType : 'select',
+      present   : 'name',
+      counter   : 'membersCount'
     },
-    name: {
+    username: {
       type     : 'string',
-      text     : '用户名',
+      text     : '登录账号',
       max      : 50,
       min      : 3,
       required : true,
       isUnique : true,
       isInput  : true
+    },
+    email: {
+      type: 'email',
+      text: 'email',
+      isInput: true
     },
     password: {
       type: 'password',
@@ -59,6 +72,14 @@ var tables = {
       required: true,
       isInput: true,
       inputType: 'password'
+    },
+    isAdmit: { 
+      type: 'boolean',
+      text: '已批准',
+      default: false, 
+      format: function (v) { return v ? '是' : '否'; }, 
+      isInput: true, 
+      inputType: 'checkbox'
     },
     created:  { 
       type: 'created', 
