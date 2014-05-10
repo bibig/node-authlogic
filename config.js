@@ -10,8 +10,19 @@ var Config = {
   staticRoot : '/auths-assets',
   
   csrf       :   true,
-  dbPath     : path.join(__dirname, './data'),
   favicon    : path.join(__dirname, './public/images/favicon.ico'),
+
+  // db settings
+  dbPath     : path.join(__dirname, './data'),
+
+  tables: {
+    hasRole        : true,
+    roles          : 'roles',
+    members        : 'members',
+    field_rolename : 'name', 
+    field_username : 'username',
+    field_password : 'password'
+  },
 
   // if authlogic is mounted on mainApp, make sure the cookieSecret and session keys are some with mainApp
   cookieSecret : 'authLogic',
@@ -53,6 +64,7 @@ var Config = {
       member : '/'  
     }
   },
+  hasDashboards: true,
   dashboardsConfig:  {
     mount : '/admin',
     title: 'dashboards'
@@ -111,18 +123,26 @@ function create (settings) {
     config.redirectMap.logout = path.join(config.viewMount, '/login');
   }
 
-  if ( ! config.dashboardsConfig.mainToolbars) {
-    config.dashboardsConfig.mainToolbars = [
-      config.dashboardsConfig.viewMount + '|i:th|' + config.dashboardsConfig.title,
-      path.join(config.dashboardsConfig.viewMount, '/members/add') + '|i:+|新成员'
-    ];
-  }
+  if (config.hasDashboards) {
+    if ( ! config.dashboardsConfig.mainToolbars) {
+      config.dashboardsConfig.mainToolbars = [
+        config.dashboardsConfig.viewMount + '|i:th|' + config.dashboardsConfig.title,
+        path.join(config.dashboardsConfig.viewMount, '/members/add') + '|i:+|新成员'
+      ];
+    }
 
-  if ( ! config.dashboardsConfig.rightToolbars) {
-    config.dashboardsConfig.rightToolbars = [
-      config.viewMount + '/logout|i:off|' + config.text.logout
-    ];
+    if ( ! config.dashboardsConfig.rightToolbars) {
+      config.dashboardsConfig.rightToolbars = [
+        config.viewMount + '/logout|i:off|' + config.text.logout
+      ];
+    }
+
+    // keep cookie, session settings same
+    config.dashboardsConfig.cookieSecret = config.cookieSecret;
+    config.dashboardsConfig.session = yi.clone(config.session);
+
   }
+  
 
   return config;
 }

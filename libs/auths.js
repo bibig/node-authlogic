@@ -11,7 +11,11 @@ function Auths (settings) {
   this.initCan();
   this.initApp();
   this.initRoutes();
-  this.initDashboards();
+
+  if (this.config.hasDashboards) {
+    this.initDashboards();  
+  }
+
   this.initErrorHandler();
 }
 

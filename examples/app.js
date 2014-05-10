@@ -14,7 +14,7 @@ var auths = Auths.create({
     'http://www.google.com|i:@|google'
   ],
   rightToolbars: ['/register|注册'],
-  footbars: ['auths sandbox, copyright']
+  footbars: ['auths sandbox, copyright', '*demo: [superman/superman123]']
 });
 
 auths.initRoot();
