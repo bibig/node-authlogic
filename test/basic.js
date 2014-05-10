@@ -1,21 +1,21 @@
 
-var should  = require('should');
-var request = require('supertest');
-var path    = require('path');
-var Auths   = require('../index');
-var cheerio = require('cheerio');
-var utils   = require('./utils');
+var should    = require('should');
+var request   = require('supertest');
+var path      = require('path');
+var Authlogic = require('../index');
+var cheerio   = require('cheerio');
+var utils     = require('./utils');
 
-var auths = Auths.create({
+var authLogic = Authlogic.create({
   dbPath : path.join(__dirname, 'data')
 });
 
-auths.initRoot();
+authLogic.initRoot();
 
 describe('get static asserts', function () {
   it('get base css', function (done) {
-    request(auths.app)
-      .get(auths.config.stylesheets.base)
+    request(authLogic.app)
+      .get(authLogic.config.stylesheets.base)
       .expect(200)
       .expect('Content-Type', /css/)
       .end(function (e, res) {
@@ -29,19 +29,19 @@ describe('get static asserts', function () {
 describe('<basic test>', function () {
   var csrf;
   var cookies;
-  var agent = request.agent(auths.app);
+  var agent = request.agent(authLogic.app);
 
   this.timeout(5000);
 
   after(function (done) {
-    utils.clear(auths.config.dbPath, done);
+    utils.clear(authLogic.config.dbPath, done);
   });
 
   it('get /login', function (done) {
 
     agent
       .get('/login')
-      // .expect(200)
+      .expect(200)
       .end(function (e, res) {
         
         if (e) { console.error(e); console.log(e.stack); return; }

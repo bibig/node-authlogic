@@ -13,6 +13,13 @@ var Config = {
   dbPath     : path.join(__dirname, './data'),
   favicon    : path.join(__dirname, './public/images/favicon.ico'),
 
+  // if authlogic is mounted on mainApp, make sure the cookieSecret and session keys are some with mainApp
+  cookieSecret : 'authLogic',
+  session: {
+    keys: ['auth', 'logic'],
+    maxAge: 60 * 60 * 1000
+  }, 
+
   javascripts     : {
     jquery    : '//ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.0.min.js',
     tinymce   : '//tinymce.cachefly.net/4.0/tinymce.min.js',
@@ -116,8 +123,6 @@ function create (settings) {
       config.viewMount + '/logout|i:off|' + config.text.logout
     ];
   }
-
-  // console.log(config.dashboardsConfig);
 
   return config;
 }

@@ -23,10 +23,6 @@ Routes.prototype.login = function () {
     var isPass = false;
     var memberData;
 
-    // console.log(req.sessionOptions);
-    // console.log(req.session.isMember);
-    // console.log(req.session.role);
-
     function renderForm () {
 
       if (self.csrf) {
@@ -69,8 +65,8 @@ Routes.prototype.login = function () {
                 
                 // console.log('ready to set session');
                 req.session.auth = {
-                  isMember : true,
-                  role     : role.name 
+                  role     : role.name,
+                  username : member.username
                 };
                 // console.log(req.session.role);
 

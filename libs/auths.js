@@ -106,8 +106,8 @@ Auths.prototype.initApp = function () {
      force    : (app.isProduction ?  false : true)
   }));
 
-  app.use(cookieParser('dashboards admin'));
-  app.use(session({keys: ['dashboards', 'admin'], maxAge: 60 * 60 * 1000}));
+  app.use(cookieParser(this.config.cookieSecret));
+  app.use(session(yi.clone(this.config.session)));
   
   if (this.config.csrf) {
     app.use(csrf());  
@@ -151,11 +151,9 @@ Auths.prototype.guestOnly = function () {
 
   return function (req, res, next) {
 
-    if (req.session.auth) {
-      if (req.session.auth.isMember === true) {
-        res.redirect(backUrl);
-        return;
-      }
+    if ( yi.isNotEmpty(req.session.auth)) {
+      res.redirect(backUrl);
+      return;
     }
 
     next();
@@ -168,13 +166,10 @@ Auths.prototype.memberOnly = function () {
 
   return function (req, res, next) {
     
-    if (req.session.auth) {
-      if (req.session.auth.isMember === true) {
-        next();
-        return;
-      }
+    if (yi.isNotEmpty(req.session.auth)) {
+      next();
+      return;
     }
-
     res.redirect(backUrl);
   };
 };
