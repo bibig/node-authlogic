@@ -16,12 +16,14 @@ var Config = {
   dbPath     : path.join(__dirname, './data'),
 
   tables: {
-    hasRole        : true,
-    roles          : 'roles',
-    members        : 'members',
-    field_rolename : 'name', 
-    field_username : 'username',
-    field_password : 'password'
+    roles                   : 'roles',  // if false mean no roles table
+    members                 : 'members',
+    field_rolename          : 'name', 
+    field_username          : 'username',
+    field_password          : 'password',
+    field_admit             : false,  // false mean don't need
+    field_status            : false,  // false mean don't need
+    extra_fields_in_session : []
   },
 
   // if authlogic is mounted on mainApp, make sure the cookieSecret and session keys are some with mainApp
@@ -50,7 +52,9 @@ var Config = {
   errorMessages: {
     '100': '没有找到用户对应的角色', // the logined member missing role info.
     '101': '对不起，用户名和密码不符', // username and password are not matched
-    '102': '请输入用户名和密码'      // should input username and password
+    '102': '请输入用户名和密码',      // should input username and password
+    '103': '用户信息还在审批中',      // under admit
+    '104': '用户已经停用'             // invalid status
   },
   redirectMap: {
     logout     : null,  // where to redirect when logout

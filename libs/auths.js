@@ -174,6 +174,8 @@ Auths.prototype.memberOnly = function () {
       next();
       return;
     }
+
+    rememberCurrentUrlInSession(req);
     res.redirect(backUrl);
   };
 };
@@ -215,3 +217,7 @@ Auths.prototype.adminOnly = function (backUrl) {
 Auths.prototype.rootOnly = function (backUrl) {
   return this.roleOnly('root', this.config.redirectMap.rootOnly);
 };
+
+function rememberCurrentUrlInSession (req) {
+  req.session.authUrl = req.url;
+}
