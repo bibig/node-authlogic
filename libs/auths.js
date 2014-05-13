@@ -30,7 +30,7 @@ Auths.prototype.initCan = function () {
 };
 
 Auths.prototype.initRoot = function (username, password) {
-  var Roles = this.can.open('roles');
+  var Roles   = this.can.open('roles');
   var Members = this.can.open('members');
   var root, member;
 
@@ -62,19 +62,20 @@ Auths.prototype.initRoot = function (username, password) {
 Auths.prototype.initApp = function () {
   if (this.app) return;
 
-  var express        = require('express');
-  var favicon        = require('serve-favicon');
-  var logger         = require('morgan');
-  var cookieParser   = require('cookie-parser');
-  var bodyParser     = require('body-parser');
-  var session        = require('cookie-session');
-  var multipart      = require('connect-multiparty');
-  // var debug       = require('debug')('app');
-  var csrf           = require('csurf');
+  var express       = require('express');
+  var favicon       = require('serve-favicon');
+  var logger        = require('morgan');
+  var cookieParser  = require('cookie-parser');
+  var bodyParser    = require('body-parser');
+  var session       = require('cookie-session');
+  var multipart     = require('connect-multiparty');
+  // var debug      = require('debug')('app');
+  var csrf          = require('csurf');
+  var shine         = require('shine');
   
-  var swig           = require('swig');
-  // var swigExtras  = require('swig-extras');
-  var app            = express();
+  var swig          = require('swig');
+  // var swigExtras = require('swig-extras');
+  var app           = express();
 
   app.isProduction   = app.get('env') === 'production';
 
@@ -104,14 +105,16 @@ Auths.prototype.initApp = function () {
     uploadDir: path.join(__dirname, 'tmp')
   }));
 
-  app.use(require('stylus').middleware({
-     src      : path.join(__dirname, '../public'),
+  /*app.use(require('stylus').middleware({
+     src      : __dirname + '/../public/stylesheets/',
      compress : (app.isProduction ? true : false),
      force    : (app.isProduction ?  false : true)
   }));
+  */
 
   app.use(cookieParser(this.config.cookieSecret));
   app.use(session(yi.clone(this.config.session)));
+  app.use(shine());
   
   if (this.config.csrf) {
     app.use(csrf());  
@@ -145,6 +148,7 @@ Auths.prototype.initDashboards = function () {
   var dashboardsApp = Dashboards.create(this.can, this.config.dashboardsConfig);
 
   this.app.get(this.config.dashboardsConfig.mount, this.rootOnly());
+  this.app.get(path.join(this.config.dashboardsConfig.mount, '/*'), this.rootOnly());
   this.app.use(this.config.dashboardsConfig.mount, dashboardsApp);
 
 };
@@ -166,6 +170,7 @@ Auths.prototype.guestOnly = function () {
 
 
 Auths.prototype.memberOnly = function () {
+  var self    = this;
   var backUrl = this.config.redirectMap.memberOnly;
 
   return function (req, res, next) {
@@ -174,7 +179,7 @@ Auths.prototype.memberOnly = function () {
       next();
       return;
     }
-
+    req.shine('warning', self.config.flashMessages.memberOnly);
     rememberCurrentUrlInSession(req);
     res.redirect(backUrl);
   };
@@ -201,16 +206,18 @@ Auths.prototype.roleOnly = function (roleName, backUrl) {
       if (req.session.auth.role === roleName) {
         next();
       } else {
+        req.shine('warning', self.config.flashMessages.roleOnly, roleName);
         res.redirect(backUrl);
       }
     } else {
+      req.shine('warning', self.config.flashMessages.memberOnly);
       res.redirect(self.config.redirectMap.memberOnly);
     }
 
   };
 };
 
-Auths.prototype.adminOnly = function (backUrl) {
+Auths.prototype.adminOnly = function (backUrl) {  
   return this.roleOnly('admin', this.config.redirectMap.adminOnly);
 };
 

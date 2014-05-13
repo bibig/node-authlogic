@@ -1,9 +1,13 @@
 
-var express = require('express');
-var Auths = require('../index');
-var path  = require('path');
-var mainApp = express();
-var mount = '/auths';
+var express  = require('express');
+var Auths    = require('../index');
+var path     = require('path');
+var mainApp  = express();
+var mount    = '/auths';
+var tailbone = require('tailbone').create({
+  header: '<center><h3>this is an example site</h3><div>please access: <a href="/auths/login">/auths/login</a></div></center>',
+  footer: '<center>demo [superman/superman123]</center>'
+});
 
 var auths = Auths.create({
   mount: mount,
@@ -21,4 +25,8 @@ auths.initRoot();
 // auths.app.listen(4001);
 
 mainApp.use(mount, auths.app);
-mainApp.listen(4001);
+
+tailbone.enable(mainApp);
+mainApp.listen(4001, function () {
+  console.log('listen on 4001');
+});

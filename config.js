@@ -56,6 +56,11 @@ var Config = {
     '103': '用户信息还在审批中',      // under admit
     '104': '用户已经停用'             // invalid status
   },
+  flashMessages: {
+    memberOnly : '只有注册用户才可以访问，请先登录。',
+    roleOnly   : '只有%s用户才可以访问。',
+    logout     : '您已成功退出。'
+  },
   redirectMap: {
     logout     : null,  // where to redirect when logout
     memberOnly : null,  // will redirect to login page, need add mount

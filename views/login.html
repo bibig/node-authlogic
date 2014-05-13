@@ -10,6 +10,7 @@
       <div class="col-md-7">
         <div id="loginForm" style="border-left: 1px solid #ccc; margin-left: 2em; padding-left: 2em">
           <h2>{{text.login}}</h2>
+          {{ flash|safe }}
           {% if errorMessage %}
             <div class="alert alert-danger">{{errorMessage}}</div>
           {% endif %}

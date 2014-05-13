@@ -15,6 +15,8 @@ function Routes (config) {
   this.field_password = config.tables.field_password;
   this.field_status   = config.tables.field_status;
 
+  this.flashMessages  = config.flashMessages;
+
   this.extra_fields_in_session = config.tables.extra_fields_in_session;
   
   this.Members        = config.can.open(this.table_members);
@@ -43,7 +45,8 @@ Routes.prototype.login = function () {
       if (self.csrf) {
         locals.token = req.csrfToken();
       }
-        
+
+      locals.flash = req.shine();
       res.render('login.html', locals);    
     }
 
@@ -150,6 +153,7 @@ Routes.prototype.logout = function () {
 
   return function (req, res) {
     req.session.auth = null;
+    req.shine('success', self.flashMessages.logout);
     res.redirect(self.logoutRedirectUrl);
   };
 };
