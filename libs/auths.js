@@ -179,7 +179,11 @@ Auths.prototype.memberOnly = function () {
       next();
       return;
     }
-    req.shine('warning', self.config.flashMessages.memberOnly);
+
+    if (hasShine(req)) {
+      req.shine('warning', self.config.flashMessages.memberOnly);  
+    }
+    
     rememberCurrentUrlInSession(req);
     res.redirect(backUrl);
   };
@@ -206,11 +210,11 @@ Auths.prototype.roleOnly = function (roleName, backUrl) {
       if (req.session.auth.role === roleName) {
         next();
       } else {
-        req.shine('warning', self.config.flashMessages.roleOnly, roleName);
+        if (hasShine(req)) { req.shine('warning', self.config.flashMessages.roleOnly, roleName);}
         res.redirect(backUrl);
       }
     } else {
-      req.shine('warning', self.config.flashMessages.memberOnly);
+      if (hasShine(req)) { req.shine('warning', self.config.flashMessages.memberOnly)};
       res.redirect(self.config.redirectMap.memberOnly);
     }
 
@@ -227,4 +231,9 @@ Auths.prototype.rootOnly = function (backUrl) {
 
 function rememberCurrentUrlInSession (req) {
   req.session.authUrl = req.url;
+}
+
+// be carefull, this is important, because the parent app may not use shine.
+function hasShine (req) {
+  return typeof req.shine == 'function';
 }
