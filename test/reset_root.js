@@ -10,7 +10,7 @@ var superman, role;
 var rootuser;
 // authLogic.initRoot();
 
-describe('init root user', function () {
+describe('init and reset root user', function () {
 
   before(function () {
     authLogic = Authlogic.create({
@@ -94,6 +94,15 @@ describe('reset root user', function () {
     superman.should.be.ok;
     superman.should.have.property('password');
     Members.model(superman).isValidPassword(rootuser[1]).should.be.true;
+  });
+
+  it('reset with default root user', function () {
+    authLogic.resetRoot();
+
+    superman = Members.findBy('username', authLogic.config.defaultRoot.username).execSync();
+    superman.should.be.ok;
+    superman.should.have.property('password');
+    Members.model(superman).isValidPassword(authLogic.config.defaultRoot.password).should.be.true;
   });
 
 });

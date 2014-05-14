@@ -62,7 +62,10 @@ Auths.prototype.initRoot = function (username, password) {
 
 // basically, used for cli
 Auths.prototype.resetRoot = function (username, password) {
-  this.can.open('members').removeBySync('username', username || 'superman');
+  username = username || this.config.defaultRoot.username;
+  password = password || this.config.defaultRoot.password;
+
+  this.can.open('members').removeBySync('username', username);
   this.initRoot(username, password);
 };
 
