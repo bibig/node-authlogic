@@ -77,6 +77,10 @@ var Config = {
   dashboardsConfig:  {
     mount : '/admin',
     title: 'dashboards'
+  },
+  defaultRoot: {
+    username : 'king',
+    password : 'king123'
   }
 };
 

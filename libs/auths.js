@@ -34,8 +34,8 @@ Auths.prototype.initRoot = function (username, password) {
   var Members = this.can.open('members');
   var root, member;
 
-  username = username || 'superman';
-  password = password || 'superman123';
+  username = username || this.config.defaultRoot.username;
+  password = password || this.config.defaultRoot.password;
 
   member = Members.findBy('username', username).execSync();
 
@@ -49,14 +49,21 @@ Auths.prototype.initRoot = function (username, password) {
         description : 'administrator role'
       });
     }
+
     Members.insertSync({
       _role    : root,
-      username : username || 'superman',
-      password : password || 'superman123',
+      username : username,
+      password : password,
       isAdmit  : true
     });
   }
   
+};
+
+// basically, used for cli
+Auths.prototype.resetRoot = function (username, password) {
+  this.can.open('members').removeBySync('username', username || 'superman');
+  this.initRoot(username, password);
 };
 
 Auths.prototype.initApp = function () {
