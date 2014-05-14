@@ -31,6 +31,8 @@ var authLogic = Authlogic.create({
   dbPath : path.join(__dirname, 'mounted_data')
 });
 
+var rootUser = authLogic.config.defaultRoot;
+
 authLogic.initRoot();
 
 // console.log(authLogic.config);
@@ -86,6 +88,23 @@ describe('<basic test>', function () {
     utils.clear(authLogic.config.dbPath, done);
   });
 
+  it('get /only-access-by-member by guest, should redirect to login page', function (done) {
+
+    agent
+      .get('/only-access-by-member')
+      .expect(302)
+      .end(function (e, res) {
+
+        if (e) { console.error(e); console.log(e.stack); return; }
+
+        should.not.exist(e);
+        should(res.headers.location).eql('/auth/login');
+
+        done();
+
+      });
+  });
+
   it('get /auth/login', function (done) {
 
     agent
@@ -109,12 +128,12 @@ describe('<basic test>', function () {
       });
   });
 
-  it('post /auth/login', function (done) {
+  it('post /auth/login, when logined should redirect to the remembered url', function (done) {
     // console.log('%s: %d', csrf, csrf.length);
     agent
       .post('/auth/login')
-      .field('member[username]', 'superman')
-      .field('member[password]', 'superman123')
+      .field('member[username]', rootUser.username)
+      .field('member[password]', rootUser.password)
       .field('member[remember]', 'on')
       .field('_csrf', csrf)
       .expect(302)
@@ -123,7 +142,7 @@ describe('<basic test>', function () {
         if (e) { console.error(e); console.log(e.stack); return; }
 
         should.not.exist(e);
-        should(res.headers.location).eql('/auth/admin');
+        should(res.headers.location).eql('/only-access-by-member');
 
         done();
 
@@ -137,7 +156,7 @@ describe('<basic test>', function () {
       .end(function (e, res) {
         should.not.exist(e);
 
-        res.text.should.eql('root,superman');
+        res.text.should.eql('root,' + rootUser.username);
         done();
       });
   });

@@ -240,7 +240,7 @@ Auths.prototype.rootOnly = function (backUrl) {
 };
 
 function rememberCurrentUrlInSession (req) {
-  req.session.authUrl = req.url;
+  req.session.authUrl = req.originalUrl;
 }
 
 // be carefull, this is important, because the parent app may not use shine.

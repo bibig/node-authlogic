@@ -14,7 +14,7 @@ describe('init and reset root user', function () {
 
   before(function () {
     authLogic = Authlogic.create({
-      dbPath : path.join(__dirname, 'data')
+      dbPath : path.join(__dirname, 'reset_test_data')
     });
     Members = authLogic.can.open('members');
     Roles   = authLogic.can.open('roles');
@@ -43,7 +43,7 @@ describe('init root user with custom args', function () {
 
   before(function () {
     authLogic = Authlogic.create({
-      dbPath : path.join(__dirname, 'data2')
+      dbPath : path.join(__dirname, 'init_test_data')
     });
     Members = authLogic.can.open('members');
     Roles   = authLogic.can.open('roles');

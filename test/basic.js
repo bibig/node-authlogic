@@ -10,6 +10,8 @@ var authLogic = Authlogic.create({
   dbPath : path.join(__dirname, 'data')
 });
 
+var rootUser = authLogic.config.defaultRoot;
+
 authLogic.initRoot();
 
 describe('get static asserts', function () {
@@ -65,8 +67,8 @@ describe('<basic test>', function () {
     // console.log('%s: %d', csrf, csrf.length);
     agent
       .post('/login')
-      .field('member[username]', 'superman')
-      .field('member[password]', 'superman123')
+      .field('member[username]', rootUser.username)
+      .field('member[password]', rootUser.password)
       .field('member[remember]', 'on')
       .field('_csrf', csrf)
       .expect(302)
