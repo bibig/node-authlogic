@@ -1,9 +1,15 @@
-module.exports = Auths;
+exports.create = create;
+exports.getCan = getCan;
 
 var Routes = require('./routes');
 var path   = require('path');
 var yi     = require('yi');
 var Config = require('../config');
+
+function create (settings) {
+  return new Auths(settings);
+}
+
 
 function Auths (settings) {
   
@@ -19,10 +25,14 @@ function Auths (settings) {
   this.initErrorHandler();
 }
 
+function getCan (dbPath) {
+  return require('./can').create(dbPath);
+}
+
 Auths.prototype.initCan = function () {
 
   if ( ! this.config.can ) {
-    this.config.can = require('./can').create(this.config.dbPath);
+    this.config.can = getCan(this.config.dbPath);
   }
 
   this.can = this.config.can;
