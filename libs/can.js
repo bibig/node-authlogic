@@ -1,6 +1,6 @@
 exports.create = create;
 
-var Jsoncan = require('Jsoncan');
+var Jsoncan = require('jsoncan');
 
 var seqs = function () {
   var list = [];
