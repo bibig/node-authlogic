@@ -5,11 +5,11 @@ var Routes = require('./routes');
 var path   = require('path');
 var yi     = require('yi');
 var Config = require('../config');
+var Glory  = require('glory');
 
 function create (settings) {
   return new Auths(settings);
 }
-
 
 function Auths (settings) {
   
@@ -80,7 +80,11 @@ Auths.prototype.resetRoot = function (username, password) {
 };
 
 Auths.prototype.initApp = function () {
-  if (this.app) return;
+  if (this.glory) return;
+
+  this.glory = Glory(this.config);
+
+  /*
 
   var express       = require('express');
   var favicon       = require('serve-favicon');
@@ -140,18 +144,23 @@ Auths.prototype.initApp = function () {
   }
   
   app.use(this.config.staticRoot, express.static(path.join(__dirname, '../public')));
+  
+  */
+  yi.merge(this.glory.app.locals, this.config);
 
-  yi.merge(app.locals, this.config);
-
-  this.app = app;
+  this.app = this.glory.app;
 };
 
 Auths.prototype.initErrorHandler = function () {
-  var tailbone = require('tailbone').create({
+  /*var tailbone = require('tailbone').create({
     viewMount: this.config.viewMount
   });
 
   tailbone.enable(this.app);
+  */
+  this.glory.initTailbone({
+    viewMount: this.config.viewMount
+  });
 };
 
 
@@ -233,7 +242,7 @@ Auths.prototype.roleOnly = function (roleName, backUrl) {
         res.redirect(backUrl);
       }
     } else {
-      if (hasShine(req)) { req.shine('warning', self.config.flashMessages.memberOnly)};
+      if (hasShine(req)) { req.shine('warning', self.config.flashMessages.memberOnly); }
       res.redirect(self.config.redirectMap.memberOnly);
     }
 

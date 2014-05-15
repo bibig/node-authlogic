@@ -5,17 +5,20 @@ var path = require('path');
 var anchors    = require('bootstrap-helper').anchors;
 
 var Config = {
+  views      : path.join(__dirname, './views'),
+  staticRoot : '/auths-assets',
+  staticPath : path.join(__dirname, './public'),
+
   viewMount  : '',
   mount      : '',
-  staticRoot : '/auths-assets',
   
   csrf       :   true,
   favicon    : path.join(__dirname, './public/images/favicon.ico'),
-
+  
   // db settings
   dbPath     : path.join(__dirname, './data'),
-
-  tables: {
+  
+  tables     : {
     roles                   : 'roles',  // if false mean no roles table
     members                 : 'members',
     field_rolename          : 'name', 

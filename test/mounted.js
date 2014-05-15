@@ -1,28 +1,21 @@
 
-var should        = require('should');
-var request       = require('supertest');
-var path          = require('path');
-var Authlogic     = require('../index');
-var cheerio       = require('cheerio');
-var utils         = require('./utils');
-
-
-var express       = require('express');
-var favicon       = require('serve-favicon');
-var logger        = require('morgan');
-var cookieParser  = require('cookie-parser');
-var bodyParser    = require('body-parser');
-var session       = require('cookie-session');
-var multipart     = require('connect-multiparty');
-
-// very important, should keep cookie and session config exactly same between mainApp with authLogic.app
+var should    = require('should');
+var request   = require('supertest');
+var path      = require('path');
+var Authlogic = require('../index');
+var cheerio   = require('cheerio');
+var utils     = require('./utils');
 var cookieSecret  = 'this is a test';
 var sessionConfig = {
   keys: ['hello', 'world'],
   maxAge: 60 * 1000
 };
 
-var mainApp   = express();
+var glory     = require('glory')({
+  cookieSecret : cookieSecret,
+  session      : sessionConfig
+});
+
 var mount   = '/auth';
 var authLogic = Authlogic.create({
   mount: mount,
@@ -35,22 +28,8 @@ var rootUser = authLogic.config.defaultRoot;
 
 authLogic.initRoot();
 
-// console.log(authLogic.config);
-
-mainApp.use(logger('dev'));
-mainApp.use(bodyParser.json());
-mainApp.use(bodyParser.urlencoded());
-
-mainApp.use(multipart({
-  maxFilesSize: 20 * 1024 * 1024,
-  uploadDir: path.join(__dirname, 'tmp')
-}));
-
-mainApp.use(cookieParser(cookieSecret));
-mainApp.use(session(sessionConfig));
-
-mainApp.use(mount, authLogic.app);
-mainApp.get('/', function (req, res, next) {
+glory.app.use(mount, authLogic.app);
+glory.app.get('/', function (req, res, next) {
   if (req.session.auth) {
     res.send(req.session.auth.role + ',' + req.session.auth.username);  
   } else {
@@ -59,13 +38,13 @@ mainApp.get('/', function (req, res, next) {
   
 });
 
-mainApp.get('/only-access-by-member', [authLogic.memberOnly()], function (req, res, next) {
+glory.app.get('/only-access-by-member', [authLogic.memberOnly()], function (req, res, next) {
   res.send('ok');
 });
 
 describe('get static asserts', function () {
   it('get base css', function (done) {
-    request(mainApp)
+    request(glory.app)
       .get(authLogic.config.stylesheets.base)
       .expect(200)
       .expect('Content-Type', /css/)
@@ -80,7 +59,7 @@ describe('get static asserts', function () {
 describe('<basic test>', function () {
   var csrf;
   var cookies;
-  var agent = request.agent(mainApp);
+  var agent = request.agent(glory.app);
 
   this.timeout(5000);
 

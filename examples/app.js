@@ -1,14 +1,17 @@
 
-var express  = require('express');
-var Auths    = require('../index');
-var path     = require('path');
-var mainApp  = express();
-var mount    = '/auths';
-var tailbone = require('tailbone').create({
-  header: '<center><h3>this is an example site</h3><div>please access: <a href="/auths/login">/auths/login</a></div></center>',
-  footer: '<center>demo [superman/superman123]</center>'
+var glory = require('glory')({
+  tailbone: {
+    header: '<center><h3>this is an example site</h3><div>please access: <a href="/auths/login">/auths/login</a></div><div>if logined, access <a href="/auths/admin">/auths/admin</a></div></center>',
+    footer: '<center>demo [superman/superman123]</center>'
+  },
+  port: {
+    dev: 4001
+  }
 });
 
+var Auths    = require('../index');
+var path     = require('path');
+var mount    = '/auths';
 var auths = Auths.create({
   mount: mount,
   dbPath: path.join(__dirname, 'data'),
@@ -22,11 +25,8 @@ var auths = Auths.create({
 });
 
 auths.initRoot();
-// auths.app.listen(4001);
 
-mainApp.use(mount, auths.app);
-
-tailbone.enable(mainApp);
-mainApp.listen(4001, function () {
-  console.log('listen on 4001');
+glory.app.use(mount, auths.app);
+glory.ready(function () {
+  console.log('listen on ' + glory.app.get('port'));
 });
