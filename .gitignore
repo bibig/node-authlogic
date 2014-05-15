@@ -3,3 +3,4 @@ node_modules
 data/*
 test/fixtures/data
 examples/data
+public/stylesheets/base.css

@@ -115,12 +115,11 @@ Auths.prototype.initApp = function () {
     uploadDir: path.join(__dirname, 'tmp')
   }));
 
-  /*app.use(require('stylus').middleware({
-     src      : __dirname + '/../public/stylesheets/',
+  app.use(this.config.staticRoot, require('stylus').middleware({
+     src      : path.join(__dirname, '../public'),
      compress : (app.isProduction ? true : false),
      force    : (app.isProduction ?  false : true)
   }));
-  */
 
   app.use(cookieParser(this.config.cookieSecret));
   app.use(session(yi.clone(this.config.session)));
