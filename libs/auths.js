@@ -83,82 +83,12 @@ Auths.prototype.initApp = function () {
   if (this.glory) return;
 
   this.glory = Glory(this.config);
-
-  /*
-
-  var express       = require('express');
-  var favicon       = require('serve-favicon');
-  var logger        = require('morgan');
-  var cookieParser  = require('cookie-parser');
-  var bodyParser    = require('body-parser');
-  var session       = require('cookie-session');
-  var multipart     = require('connect-multiparty');
-  // var debug      = require('debug')('app');
-  var csrf          = require('csurf');
-  var shine         = require('shine');
-  
-  var swig          = require('swig');
-  // var swigExtras = require('swig-extras');
-  var app           = express();
-
-  app.isProduction   = app.get('env') === 'production';
-
-  // swigExtras.useFilter(swig, 'nl2br');
-
-  app.engine('html', swig.renderFile);
-  app.set('view engine', 'html');
-  app.set('views', path.join(__dirname, '../views'));
-
-  if ( ! app.isProduction ) {
-    app.set('view cache', false);
-    swig.setDefaults({ cache: false });
-  }
-  
-  // view engine setup
-  // app.set('views', path.join(__dirname, 'views'));
-  // app.set('view engine', 'jade');
-
-
-  app.use(favicon(this.config.favicon));
-  app.use(logger('dev'));
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded());
-
-  app.use(multipart({
-    maxFilesSize: 20 * 1024 * 1024,
-    uploadDir: path.join(__dirname, 'tmp')
-  }));
-
-  app.use(this.config.staticRoot, require('stylus').middleware({
-     src      : path.join(__dirname, '../public'),
-     compress : (app.isProduction ? true : false),
-     force    : (app.isProduction ?  false : true)
-  }));
-
-  app.use(cookieParser(this.config.cookieSecret));
-  app.use(session(yi.clone(this.config.session)));
-  app.use(shine());
-  
-  if (this.config.csrf) {
-    app.use(csrf());  
-  }
-  
-  app.use(this.config.staticRoot, express.static(path.join(__dirname, '../public')));
-  
-  */
   yi.merge(this.glory.app.locals, this.config);
-
   this.app = this.glory.app;
 };
 
 Auths.prototype.initErrorHandler = function () {
-  /*var tailbone = require('tailbone').create({
-    viewMount: this.config.viewMount
-  });
-
-  tailbone.enable(this.app);
-  */
-  this.glory.initTailbone({
+  this.glory.tail({
     viewMount: this.config.viewMount
   });
 };
