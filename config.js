@@ -50,7 +50,8 @@ var Config = {
     username : '用户名',
     password : '密码',
     remember : '记住我',
-    logout   : '退出'
+    logout   : '退出',
+    member   : '成员'
   },
   errorMessages: {
     '100': '没有找到用户对应的角色', // the logined member missing role info.
@@ -136,14 +137,14 @@ function create (settings) {
   }
 
   if ( ! config.redirectMap.logout ) {
-    config.redirectMap.logout = path.join(config.viewMount, '/login');
+    config.redirectMap.logout = path.join(config.viewMount, '/logout');
   }
 
   if (config.hasDashboards) {
     if ( ! config.dashboardsConfig.mainToolbars) {
       config.dashboardsConfig.mainToolbars = [
         config.dashboardsConfig.viewMount + '|i:th|' + config.dashboardsConfig.title,
-        path.join(config.dashboardsConfig.viewMount, '/members/add') + '|i:+|新成员'
+        path.join(config.dashboardsConfig.viewMount, '/members/add') + '|i:+|' + config.text.member
       ];
     }
 
@@ -158,7 +159,6 @@ function create (settings) {
     config.dashboardsConfig.session = yi.clone(config.session);
 
   }
-  
 
   return config;
 }
