@@ -3,6 +3,7 @@ exports.create = create;
 var yi   = require('yi');
 var path = require('path');
 var anchors    = require('bootstrap-helper').anchors;
+var Event = require('events').EventEmitter;
 
 var Config = {
   views      : path.join(__dirname, './views'),
@@ -137,7 +138,7 @@ function create (settings) {
   }
 
   if ( ! config.redirectMap.logout ) {
-    config.redirectMap.logout = path.join(config.viewMount, '/logout');
+    config.redirectMap.logout = path.join(config.viewMount, '/login');
   }
 
   if (config.hasDashboards) {
@@ -158,6 +159,17 @@ function create (settings) {
     config.dashboardsConfig.cookieSecret = config.cookieSecret;
     config.dashboardsConfig.session = yi.clone(config.session);
 
+  }
+
+  // init event
+  config.event = new Event();
+
+  if (config.onSuccess) {
+    config.event.on('success', config.onSuccess);
+  }
+
+  if (config.onFailed) {
+    config.event.on('failed', config.onFailed); 
   }
 
   return config;

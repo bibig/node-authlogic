@@ -8,6 +8,7 @@ function create (config) {
 
 function Routes (config) {
 
+  this.event          = config.event;
   this.table_roles    = config.tables.roles;
   
   this.table_members  = config.tables.members;
@@ -57,7 +58,7 @@ Routes.prototype.login = function () {
       if (yi.isNotEmpty(memberData.username) && yi.isNotEmpty(memberData.password)) {
 
         self.Members.findBy(self.field_username, memberData.username).exec(function (e, member) {
-          var model, username;
+          var model, username, auth, redirectUrl;
 
           // console.log(member);
           if (e) { return next(e); } else if ( member ) {
@@ -65,6 +66,7 @@ Routes.prototype.login = function () {
             if ( self.field_admit ) {
               if ( ! member[field_admit] ) {
                 locals.errorMessage = self.errorMessages['103'];
+                self.event.emit('failed', 103, memberData);
                 return renderForm();
               }
             }
@@ -79,6 +81,7 @@ Routes.prototype.login = function () {
               if ( self.field_status ) {
                 if ( ! member[field_status] ) {
                   locals.errorMessage = self.errorMessages['104'];
+                  self.event.emit('failed', 104, memberData);
                   return renderForm();
                 }
               }
@@ -91,35 +94,37 @@ Routes.prototype.login = function () {
           if (isPass) {
 
             // add base auth info
-            req.session.auth = {
+            req.session.auth = auth = {
               username : username
             };
 
             // add extra info
             self.extra_fields_in_session.forEach(function (name) {
-              req.session.auth[name] = member[name];
+              auth[name] = member[name];
             });
 
             if (self.table_roles) {
               self.Role.find(member._role).exec(function (e, role) {
-                var redirectUrl;
+                
                 var rolename;
 
                 // console.log(role);
                 if (e) { next(e); return; } else if ( ! role ) {
+                  self.event.emit('failed', 100, memberData);
                   next(new Error(self.errorMessages['100']));
                 } else {
                   
                   rolename = role[self.field_rolename];
 
                   // add role info
-                  req.session.auth.role = rolename;
+                  auth.role = rolename;
                   // console.log(req.session.role);
 
                   if (memberData.remember == 'on') {
                     req.sessionOptions.maxAge =  1000 * 3600 * 24 * 30;
                   }
-
+                  // event fire
+                  self.event.emit('success', auth);
                   redirectUrl = self.loginRedirectMap[rolename] || self.loginRedirectMap.member;
                   // console.log(redirectUrl);
                   
@@ -127,9 +132,16 @@ Routes.prototype.login = function () {
                 }
 
               }); // end of find role
+            } else { // not set role table
+              // event fire
+              self.event.emit('success', auth);
+              redirectUrl = self.loginRedirectMap.member;
+              
+              return redirectUrlInSessionAfterLogin(req, res, redirectUrl);
             }
 
           } else {
+            self.event.emit('failed', 101, memberData);
             locals.errorMessage = self.errorMessages['101'];
             renderForm();
           }
@@ -138,6 +150,7 @@ Routes.prototype.login = function () {
 
       } else {
         locals.errorMessage = self.errorMessages['102'];
+        self.event.emit('failed', 102, memberData);
         renderForm();
       }
 
