@@ -17,7 +17,7 @@
           <form method="post" action="{{viewMount}}/login">
             <div class="form-group">
               <label for="inputUsername">{{ text.username }}</label>
-              <input type="text" class="form-control" id="inputUsername" name="member[username]" placeholder="用户名">
+              <input type="text" class="form-control" id="inputUsername" name="member[username]" value="{{ username }}" placeholder="用户名">
             </div>
             <div class="form-group">
               <label for="inputPassword">{{ text.password }}</label>
@@ -25,7 +25,7 @@
             </div>
             <div class="checkbox">
               <label>
-                <input type="checkbox" name="member[remember]"> {{ text.remember }}
+                <input type="checkbox" name="member[remember]" checked="checked"> {{ text.remember }}
               </label>
             </div>
             <input type="hidden" name="_csrf" value="{{token}}">

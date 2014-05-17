@@ -6,8 +6,6 @@ var anchors    = require('bootstrap-helper').anchors;
 var Event = require('events').EventEmitter;
 
 var Config = {
-  // views      : path.join(__dirname, './views'),
-  // staticPath : path.join(__dirname, './public'),
   path       : __dirname,
   staticRoot : '/auths-assets',
   

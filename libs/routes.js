@@ -39,7 +39,7 @@ Routes.prototype.login = function () {
   return function (req, res, next) {
     var locals = {};
     var isPass = false;
-    var memberData;
+    var memberData = {};
 
     function renderForm () {
 
@@ -48,6 +48,8 @@ Routes.prototype.login = function () {
       }
 
       locals.flash = req.shine();
+      locals.username = memberData.username ? memberData.username : '';
+      
       res.render('login.html', locals);    
     }
 
