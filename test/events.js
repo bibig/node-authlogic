@@ -103,4 +103,72 @@ describe('test login failed situations', function () {
       });
   });
 
+  it('test onExit', function (done) {
+    var who;
+
+    authLogic.onExit(function (auth) {
+      // console.log(auth);
+      who = auth.username;
+    });
+
+    agent
+      .get('/logout')
+      .expect(302)
+      .end(function (e) {
+        should.not.exist(e);
+        should(who).eql(rootUser.username);
+        done();
+      });
+  });
+
+  it('test onFailed', function (done) {
+    var theCode;
+    
+    authLogic.onFailed(function (code) {
+      theCode = code;
+    });
+
+    agent
+      .post('/login')
+      .field('member[username]', rootUser.username)
+      .field('member[password]', 'im wrong password')
+      .expect(200)
+      .end(function (e, res) {
+
+        if (e) { console.error(e); console.log(e.stack); return; }
+
+        should.not.exist(e);
+        should(theCode).eql(101);
+        should(currentCode).eql(101);
+
+        done();
+
+      });
+
+  });
+
+  it('test onSuccess', function (done) {
+    var who;
+
+    authLogic.onSuccess(function (auth) {
+      // console.log(auth);
+      who = auth.username;
+    });
+
+    // console.log('%s: %d', csrf, csrf.length);
+    agent
+      .post('/login')
+      .field('member[username]', rootUser.username)
+      .field('member[password]', rootUser.password)
+      .expect(302)
+      .end(function (e, res) {
+
+        should.not.exist(e);
+        should(who).eql(rootUser.username);
+
+        done();
+
+      });
+  });
+
 });

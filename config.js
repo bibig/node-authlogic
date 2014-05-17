@@ -6,10 +6,12 @@ var anchors    = require('bootstrap-helper').anchors;
 var Event = require('events').EventEmitter;
 
 var Config = {
-  views      : path.join(__dirname, './views'),
+  // views      : path.join(__dirname, './views'),
+  // staticPath : path.join(__dirname, './public'),
+  path       : __dirname,
   staticRoot : '/auths-assets',
-  staticPath : path.join(__dirname, './public'),
-
+  
+  
   viewMount  : '',
   mount      : '',
   
@@ -170,6 +172,11 @@ function create (settings) {
 
   if (config.onFailed) {
     config.event.on('failed', config.onFailed); 
+  }
+
+  // logout trigger
+  if (config.onExit) {
+    config.event.on('exit', config.onExit);  
   }
 
   return config;

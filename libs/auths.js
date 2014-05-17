@@ -187,6 +187,19 @@ Auths.prototype.rootOnly = function (backUrl) {
   return this.roleOnly('root', this.config.redirectMap.rootOnly);
 };
 
+Auths.prototype.onFailed = function (callback) {
+  this.config.event.on('failed', callback);
+};
+
+Auths.prototype.onSuccess = function (callback) {
+  this.config.event.on('success', callback);
+};
+
+Auths.prototype.onExit = function (callback) {
+  this.config.event.on('exit', callback);
+};
+
+
 function rememberCurrentUrlInSession (req) {
   req.session.authUrl = req.originalUrl;
 }

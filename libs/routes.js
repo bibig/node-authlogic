@@ -165,8 +165,10 @@ Routes.prototype.logout = function () {
   var self = this;
 
   return function (req, res) {
+    self.event.emit('exit', yi.clone(req.session.auth));
     req.session.auth = null;
     req.shine('success', self.flashMessages.logout);
+    self.event.emit('logout');
     res.redirect(self.logoutRedirectUrl);
   };
 };
